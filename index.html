@@ -1,29 +1,47 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Golden Stars</title>
+    <title>Golden Stars Pro - UC Shop</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { background-color: #000; color: #fff; text-align: center; font-family: sans-serif; }
-        .card { background: #111; padding: 20px; border-radius: 15px; margin: 20px; border: 1px solid #ffd700; }
-        .gold { color: #ffd700; font-size: 30px; font-weight: bold; }
-        .btn { background: #ffd700; color: #000; padding: 15px; border-radius: 10px; display: block; margin: 10px auto; width: 80%; text-decoration: none; font-weight: bold; }
+        body { background-color: #0b0b0b; color: #fff; text-align: center; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 15px; }
+        .header { background: linear-gradient(45deg, #ffd700, #b8860b); padding: 15px; border-radius: 15px; color: #000; margin-bottom: 20px; font-weight: bold; }
+        .card { background: #1a1a1a; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #333; }
+        .gold-val { color: #ffd700; font-size: 28px; font-weight: bold; }
+        .btn { display: block; width: 100%; padding: 15px; margin: 10px 0; border-radius: 10px; border: none; font-weight: bold; font-size: 16px; cursor: pointer; text-decoration: none; }
+        .btn-play { background: #ffd700; color: #000; } /* زر المهام */
+        .btn-uc { background: #1e90ff; color: #fff; } /* زر الشدات */
+        .btn-deposit { background: #28a745; color: #fff; } /* زر الإيداع */
+        .btn-withdraw { background: #444; color: #eee; } /* زر السحب */
+        .fee-tag { color: #ff4d4d; font-size: 12px; margin-top: 5px; }
     </style>
 </head>
 <body>
+    <div class="header">🌟 متجر Golden Stars للشدات والنجوم</div>
+
     <div class="card">
-        <p>الذهب الحالي</p>
-        <div class="gold">1,200</div>
+        <p>رصيد الذهب الحالي</p>
+        <div class="gold-val">1,200</div>
+        <p style="font-size: 12px;">(25 نجمة = 1 سنت) [cite: 2026-02-14]</p>
     </div>
-    <a href="#" class="btn">🚀 ابدأ اللعب</a>
-    <a href="#" class="btn" style="background: #28a745; color: #fff;">📥 إيداع (شحن نجوم)</a>
-    <a href="#" class="btn">💰 سحب (رسوم 1.10$)</a>
-    <p style="font-size: 12px; color: #888;">نظام النجوم: 25 نجمة = 1 سنت</p>
+
+    <button class="btn btn-play" onclick="alert('جاري فتح قسم المهام والدعاية والارباح...')">🚀 قسم المهام والدعاية (Earn Money)</button>
+
+    <button class="btn btn-uc" onclick="alert('اختر كمية الشدات: \n60 UC = 1000 ذهبة \n325 UC = 5000 ذهبة')">🎮 سحب شدات PUBG Mobile</button>
+
+    <button class="btn btn-deposit" onclick="alert('سيتم تحويلك لصفحة الإيداع لشراء النجوم..')">📥 إيداع (شراء نجوم/شدات) [cite: 2026-02-14]</button>
+
+    <button class="btn btn-withdraw" onclick="alert('تنبيه: رسوم السحب هي 1.10$ ثابتة [cite: 2026-02-14]')">💰 سحب الأرباح كاش</button>
+
+    <div class="fee-tag">⚠️ رسوم السحب الموحدة: 1.10$ [cite: 2026-02-14]</div>
+
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
+        tg.ready();
     </script>
 </body>
 </html>
+
