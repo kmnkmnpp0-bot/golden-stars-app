@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golden Stars</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { background-color: #000; color: #fff; text-align: center; font-family: sans-serif; }
+        .card { background: #111; padding: 20px; border-radius: 15px; margin: 20px; border: 1px solid #ffd700; }
+        .gold { color: #ffd700; font-size: 30px; font-weight: bold; }
+        .btn { background: #ffd700; color: #000; padding: 15px; border-radius: 10px; display: block; margin: 10px auto; width: 80%; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <p>الذهب الحالي</p>
+        <div class="gold">1,200</div>
+    </div>
+    <a href="#" class="btn">🚀 ابدأ اللعب</a>
+    <a href="#" class="btn" style="background: #28a745; color: #fff;">📥 إيداع (شحن نجوم)</a>
+    <a href="#" class="btn">💰 سحب (رسوم 1.10$)</a>
+    <p style="font-size: 12px; color: #888;">نظام النجوم: 25 نجمة = 1 سنت</p>
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+    </script>
+</body>
+</html>
