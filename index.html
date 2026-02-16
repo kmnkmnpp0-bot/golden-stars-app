@@ -2,30 +2,30 @@ import telebot
 from telebot import types
 import json
 
-# التوكن بتاعك اللي بعته
+# التوكن بتاعك
 API_TOKEN = '8483423094:AAGsYnNtwxfcrG6TJ4TXigY5eMBG9ItO8Po' 
-ADMIN_ID = 8283483184 # الـ ID بتاعك كأدمن
-CHANNEL_ID = "@5jsbDp-CpFhhYTJk" # قناتك
+ADMIN_ID = 8283483184 
 
 bot = telebot.TeleBot(API_TOKEN)
 
 @bot.message_handler(commands=['start'])
 def start(message):
     user_id = message.from_user.id
-    # الرابط الذكي لشركة TimeWall اللي بيحل مشكلة الـ ID
-    timewall_link = f"https://timewall.io/users/login?oid=ef03cc0d0841b08f&uid={user_id}"
+    # الرابط اللي هيخلي فلوس CoinPayU تدخل حسابك
+    timewall_url = f"https://timewall.io/users/login?oid=ef03cc0d0841b08f&uid={user_id}"
     
-    markup = types.InlineKeyboardMarkup(row_width=1)
+    markup = types.InlineKeyboardMarkup()
+    btn1 = types.InlineKeyboardButton("💰 ابدأ جمع النجوم (المهمات)", url=timewall_url)
+    btn2 = types.InlineKeyboardButton("🛒 متجر الشدات والجواهر", callback_data="shop")
+    markup.add(btn1)
+    markup.add(btn2)
     
-    # الزرار اللي بيفتح الواجهة (المتجر)
-    # ملاحظة: لازم ترفع ملف الـ HTML وتاخد الرابط تحطه هنا مكان الرابط التجريبي
-    web_btn = types.InlineKeyboardButton("🌟 فتح تطبيق Golden Stars", web_app=types.WebAppInfo(url="https://your-site.com"))
-    task_btn = types.InlineKeyboardButton("🔗 مهمات TimeWall (ID مفعل)", url=timewall_link)
-    
-    markup.add(web_btn, task_btn)
-    
-    bot.send_message(user_id, f"أهلاً بك في Golden Stars!\nحسابك جاهز برقم: {user_id}", reply_markup=markup)
+    bot.send_message(user_id, f"أهلاً بك في Golden Stars ✨\nحسابك جاهز للعمل برقم: {user_id}", reply_markup=markup)
 
-print("✅ البوت شغال الآن بالتوكن بتاعك...")
+@bot.callback_query_handler(func=lambda call: call.data == "shop")
+def shop(call):
+    bot.send_message(call.message.chat.id, "قائمة المتجر:\n1- 30 شدة (1500 نجمة)\n2- 60 شدة (3000 نجمة)\nارسل اسم العرض وسنقوم بالرد عليك.")
+
+print("✅ البوت شغال دلوقتي.. روح جربه في تليجرام!")
 bot.polling()
 
