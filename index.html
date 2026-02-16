@@ -3,75 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Golden Stars</title>
+    <title>Golden Stars Store</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f0f0f0; padding: 10px; text-align: center; }
-        .card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .price { color: #f39c12; font-weight: bold; }
-        button { background: #2c3e50; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
-        .header { font-size: 20px; font-weight: bold; margin-bottom: 20px; }
+        body { font-family: 'Cairo', sans-serif; background-color: #f4f7f6; margin: 0; padding: 15px; text-align: center; }
+        .card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid #ddd; }
+        .title { font-size: 18px; font-weight: bold; color: #2c3e50; }
+        .price { color: #f39c12; font-size: 16px; margin: 10px 0; }
+        button { background: #2c3e50; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; }
+        .section-title { background: #f39c12; color: white; padding: 5px; border-radius: 5px; margin: 20px 0 10px; }
     </style>
 </head>
 <body>
-    <div class="header">🛒 المتجر والسحب</div>
-    
+    <h2 style="color: #2c3e50;">💎 متجر النجوم</h2>
+
+    <div class="section-title">شدات ببجي موبايل</div>
     <div class="card">
-        <div>30 شدة ببجي</div>
-        <div class="price">1500 نجمة (25 ج)</div>
-        <button onclick="order('PUBG_30', 1500)">شراء</button>
+        <div class="title">60 شدة ببجي</div>
+        <div class="price">3000 نجمة</div>
+        <button onclick="buyItem('PUBG_60', 3000)">شراء الآن</button>
     </div>
     <div class="card">
-        <div>60 شدة ببجي</div>
-        <div class="price">3000 نجمة (50 ج)</div>
-        <button onclick="order('PUBG_60', 3000)">شراء</button>
-    </div>
-    <div class="card">
-        <div>325 شدة (هدية 25)</div>
-        <div class="price">12000 نجمة (215 ج)</div>
-        <button onclick="order('PUBG_325', 12000)">شراء</button>
-    </div>
-    <div class="card">
-        <div>660 شدة (هدية 60)</div>
-        <div class="price">25000 نجمة (450 ج)</div>
-        <button onclick="order('PUBG_660', 25000)">شراء</button>
+        <div class="title">325 شدة ببجي</div>
+        <div class="price">12000 نجمة</div>
+        <button onclick="buyItem('PUBG_325', 12000)">شراء الآن</button>
     </div>
 
-    <hr>
+    <div class="section-title">جواهر فري فاير</div>
     <div class="card">
-        <div>50 جوهرة</div>
-        <div class="price">1800 نجمة (30 ج)</div>
-        <button onclick="order('FF_50', 1800)">شراء</button>
-    </div>
-    <div class="card">
-        <div>100 جوهرة</div>
-        <div class="price">3500 نجمة (60 ج)</div>
-        <button onclick="order('FF_100', 3500)">شراء</button>
-    </div>
-    <div class="card">
-        <div>210 جوهرة (هدية 10)</div>
-        <div class="price">6000 نجمة (100 ج)</div>
-        <button onclick="order('FF_210', 6000)">شراء</button>
+        <div class="title">210 جوهرة</div>
+        <div class="price">6000 نجمة</div>
+        <button onclick="buyItem('FF_210', 6000)">شراء الآن</button>
     </div>
 
-    <hr>
+    <div class="section-title">سحب كاش (فودافون)</div>
     <div class="card">
-        <div>سحب 45 جنيه (يوصلك 40)</div>
-        <div class="price">2500 نجمة</div>
-        <button onclick="order('CASH_45', 2500)">سحب</button>
-    </div>
-    <div class="card">
-        <div>سحب 150 جنيه (يوصلك 130)</div>
+        <div class="title">سحب 150 جنيه</div>
         <div class="price">8500 نجمة</div>
-        <button onclick="order('CASH_150', 8500)">سحب</button>
+        <p style="font-size: 12px; color: red;">يصلك 130 جنيه (خصم رسوم)</p>
+        <button onclick="buyItem('CASH_150', 8500)">طلب سحب</button>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
-        function order(item, price) {
-            tg.sendData(JSON.stringify({ "item": item, "price": price }));
+        tg.expand();
+
+        function buyItem(name, price) {
+            // إرسال البيانات للبوت
+            tg.sendData(JSON.stringify({
+                "action": "buy",
+                "item": name,
+                "price": price
+            }));
         }
     </script>
 </body>
 </html>
+
 
