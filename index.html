@@ -1,34 +1,77 @@
-import telebot
-from telebot import types
-import sqlite3
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golden Stars</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f0f0f0; padding: 10px; text-align: center; }
+        .card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .price { color: #f39c12; font-weight: bold; }
+        button { background: #2c3e50; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
+        .header { font-size: 20px; font-weight: bold; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="header">🛒 المتجر والسحب</div>
+    
+    <div class="card">
+        <div>30 شدة ببجي</div>
+        <div class="price">1500 نجمة (25 ج)</div>
+        <button onclick="order('PUBG_30', 1500)">شراء</button>
+    </div>
+    <div class="card">
+        <div>60 شدة ببجي</div>
+        <div class="price">3000 نجمة (50 ج)</div>
+        <button onclick="order('PUBG_60', 3000)">شراء</button>
+    </div>
+    <div class="card">
+        <div>325 شدة (هدية 25)</div>
+        <div class="price">12000 نجمة (215 ج)</div>
+        <button onclick="order('PUBG_325', 12000)">شراء</button>
+    </div>
+    <div class="card">
+        <div>660 شدة (هدية 60)</div>
+        <div class="price">25000 نجمة (450 ج)</div>
+        <button onclick="order('PUBG_660', 25000)">شراء</button>
+    </div>
 
-# --- بياناتك الأساسية ---
-API_TOKEN = 'ضع_هنا_توكن_بوتك'
-ADMIN_ID = 8283483184
-CHANNEL_ID = "@5jsbDp-CpFhhYTJk" # معرف قناتك (تأكد من إضافة البوت أدمن فيها)
-OFFER_LINK_BASE = "https://timewall.io/users/login?oid=ef03cc0d0841b08f&uid="
+    <hr>
+    <div class="card">
+        <div>50 جوهرة</div>
+        <div class="price">1800 نجمة (30 ج)</div>
+        <button onclick="order('FF_50', 1800)">شراء</button>
+    </div>
+    <div class="card">
+        <div>100 جوهرة</div>
+        <div class="price">3500 نجمة (60 ج)</div>
+        <button onclick="order('FF_100', 3500)">شراء</button>
+    </div>
+    <div class="card">
+        <div>210 جوهرة (هدية 10)</div>
+        <div class="price">6000 نجمة (100 ج)</div>
+        <button onclick="order('FF_210', 6000)">شراء</button>
+    </div>
 
-bot = telebot.TeleBot(API_TOKEN)
+    <hr>
+    <div class="card">
+        <div>سحب 45 جنيه (يوصلك 40)</div>
+        <div class="price">2500 نجمة</div>
+        <button onclick="order('CASH_45', 2500)">سحب</button>
+    </div>
+    <div class="card">
+        <div>سحب 150 جنيه (يوصلك 130)</div>
+        <div class="price">8500 نجمة</div>
+        <button onclick="order('CASH_150', 8500)">سحب</button>
+    </div>
 
-# --- إنشاء قاعدة البيانات ---
-def init_db():
-    conn = sqlite3.connect('bot_data.db')
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, balance INTEGER DEFAULT 0)''')
-    c.execute('''CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY AUTOINCREMENT, link TEXT, reward INTEGER)''')
-    conn.commit()
-    conn.close()
-
-init_db()
-
-# --- فحص الاشتراك الإجباري ---
-def check_sub(user_id):
-    try:
-        member = bot.get_chat_member(CHANNEL_ID, user_id)
-        return member.status != 'left'
-    except:
-        return False
-
-# --- الأوامر الأساسية ---
-@bot.message_group(['
+    <script>
+        let tg = window.Telegram.WebApp;
+        function order(item, price) {
+            tg.sendData(JSON.stringify({ "item": item, "price": price }));
+        }
+    </script>
+</body>
+</html>
 
