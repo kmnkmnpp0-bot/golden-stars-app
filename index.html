@@ -1,314 +1,34 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بوت الأرباح الاحترافي</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root {
-            --primary-color: #f39c12;
-            --secondary-color: #2c3e50;
-            --bg-color: #f4f7f6;
-            --text-color: #333;
-            --white: #ffffff;
-        }
+import telebot
+from telebot import types
+import sqlite3
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            margin: 0;
-            padding: 0;
-            color: var(--text-color);
-        }
+# --- بياناتك الأساسية ---
+API_TOKEN = 'ضع_هنا_توكن_بوتك'
+ADMIN_ID = 8283483184
+CHANNEL_ID = "@5jsbDp-CpFhhYTJk" # معرف قناتك (تأكد من إضافة البوت أدمن فيها)
+OFFER_LINK_BASE = "https://timewall.io/users/login?oid=ef03cc0d0841b08f&uid="
 
-        .header {
-            background: linear-gradient(135deg, var(--secondary-color), #34495e);
-            color: var(--white);
-            padding: 20px;
-            text-align: center;
-            border-bottom-left-radius: 25px;
-            border-bottom-right-radius: 25px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
+bot = telebot.TeleBot(API_TOKEN)
 
-        .user-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            background: var(--white);
-            margin: -20px 20px 10px;
-            border-radius: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
+# --- إنشاء قاعدة البيانات ---
+def init_db():
+    conn = sqlite3.connect('bot_data.db')
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, balance INTEGER DEFAULT 0)''')
+    c.execute('''CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY AUTOINCREMENT, link TEXT, reward INTEGER)''')
+    conn.commit()
+    conn.close()
 
-        .balance-box {
-            color: var(--primary-color);
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
+init_db()
 
-        .main-container {
-            padding: 15px;
-        }
+# --- فحص الاشتراك الإجباري ---
+def check_sub(user_id):
+    try:
+        member = bot.get_chat_member(CHANNEL_ID, user_id)
+        return member.status != 'left'
+    except:
+        return False
 
-        .grid-menu {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
+# --- الأوامر الأساسية ---
+@bot.message_group(['
 
-        .menu-item {
-            background: var(--white);
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            transition: transform 0.2s;
-            cursor: pointer;
-            border: 1px solid #eee;
-        }
-
-        .menu-item:active {
-            transform: scale(0.95);
-        }
-
-        .menu-item i {
-            font-size: 2rem;
-            color: var(--primary-color);
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .menu-item span {
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        /* لوحة التحكم - الترس */
-        #admin-btn {
-            display: none; /* يظهر فقط للأدمن عبر JS */
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: var(--secondary-color);
-            color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            z-index: 1000;
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 2000;
-            overflow-y: auto;
-        }
-
-        .modal-content {
-            background: var(--white);
-            margin: 10% auto;
-            padding: 20px;
-            width: 90%;
-            border-radius: 20px;
-            position: relative;
-        }
-
-        .close-btn {
-            position: absolute;
-            top: 10px; left: 10px;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        h2 { text-align: center; color: var(--secondary-color); }
-        
-        .btn-action {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 12px;
-            width: 100%;
-            border-radius: 10px;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        .list-item-admin {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .delete-icon { color: #e74c3c; cursor: pointer; }
-
-    </style>
-</head>
-<body>
-
-<div class="header">
-    <h3>أهلاً بك في بوت المهام</h3>
-    <p>استمتع بتنفيذ المهام وربح الجوائز</p>
-</div>
-
-<div class="user-info">
-    <div><i class="fa-solid fa-user"></i> <span id="username">المستخدم</span></div>
-    <div class="balance-box"><span id="user-balance">0</span> <i class="fa-solid fa-star"></i></div>
-</div>
-
-<div class="main-container">
-    <div class="grid-menu">
-        <div class="menu-item" onclick="openTasks()">
-            <i class="fa-solid fa-list-check"></i>
-            <span>المهمات الأساسية</span>
-        </div>
-
-        <div class="menu-item" onclick="openSection('extra-tasks')">
-            <i class="fa-solid fa-bolt"></i>
-            <span>مهمات سريعة</span>
-        </div>
-
-        <div class="menu-item" onclick="openSection('store')">
-            <i class="fa-solid fa-cart-shopping"></i>
-            <span>المتجر والسحب</span>
-        </div>
-
-        <div class="menu-item" onclick="openSection('ads')">
-            <i class="fa-solid fa-rectangle-ad"></i>
-            <span>الدعاية والإعلان</span>
-        </div>
-
-        <div class="menu-item" onclick="openSection('deposit')">
-            <i class="fa-solid fa-wallet"></i>
-            <span>شحن نجوم</span>
-        </div>
-        
-        <div class="menu-item" onclick="window.open('https://t.me/+5jsbDp-CpFhhYTJk')">
-            <i class="fa-solid fa-shield-check"></i>
-            <span>إثباتات السحب</span>
-        </div>
-    </div>
-</div>
-
-<div id="admin-btn" onclick="openAdmin()">
-    <i class="fa-solid fa-gear fa-spin"></i>
-</div>
-
-<div id="admin-modal" class="modal">
-    <div class="modal-content">
-        <span class="close-btn" onclick="closeModal('admin-modal')">&times;</span>
-        <h2>لوحة التحكم ⚙️</h2>
-        
-        <h4>إضافة مهمة جديدة</h4>
-        <input type="text" id="ad-link" placeholder="رابط المهمة" style="width:90%; padding:8px; margin-bottom:5px;">
-        <input type="number" id="ad-price" placeholder="سعر المهمة بالنجوم" style="width:90%; padding:8px;">
-        <button class="btn-action" onclick="addNewAd()">نشر المهمة</button>
-
-        <hr>
-        <h4>إدارة المهمات الحالية</h4>
-        <div id="admin-ads-list">
-            </div>
-
-        <hr>
-        <h4>طلبات الإيداع</h4>
-        <div id="deposit-requests">
-            </div>
-    </div>
-</div>
-
-<div id="store-modal" class="modal">
-    <div class="modal-content">
-        <span class="close-btn" onclick="closeModal('store-modal')">&times;</span>
-        <h2>المتجر والسحب 🛒</h2>
-        <div id="store-items">
-            <p style="text-align:center;">جاري تحميل العروض...</p>
-        </div>
-    </div>
-</div>
-
-<script>
-    let tg = window.Telegram.WebApp;
-    tg.expand();
-
-    const ADMIN_ID = "8283483184";
-    const userId = tg.initDataUnsafe.user.id.toString();
-    const userName = tg.initDataUnsafe.user.first_name;
-
-    document.getElementById('username').innerText = userName;
-
-    // إظهار الترس للأدمن فقط
-    if(userId === ADMIN_ID) {
-        document.getElementById('admin-btn').style.display = 'flex';
-    }
-
-    function openSection(section) {
-        if(section === 'store') {
-            document.getElementById('store-modal').style.display = 'block';
-            loadStore();
-        }
-        // يمكن إضافة باقي الأقسام هنا
-    }
-
-    function openAdmin() {
-        document.getElementById('admin-modal').style.display = 'block';
-        loadAdminAds();
-    }
-
-    function closeModal(id) {
-        document.getElementById(id).style.display = 'none';
-    }
-
-    function openTasks() {
-        // الرابط الذكي الذي يحمل ID المستخدم لشركة TimeWall
-        const timeWallUrl = `https://timewall.io/users/login?oid=ef03cc0d0841b08f&uid=${userId}`;
-        window.open(timeWallUrl, '_blank');
-    }
-
-    function loadStore() {
-        const storeDiv = document.getElementById('store-items');
-        storeDiv.innerHTML = `
-            <div style="border:1px solid #ddd; padding:10px; border-radius:10px; margin-bottom:10px;">
-                <strong>30 شدة ببجي</strong> <br> السعر: 1500 نجمة <button onclick="buy('pubg30')">شراء</button>
-            </div>
-            <div style="border:1px solid #ddd; padding:10px; border-radius:10px; margin-bottom:10px;">
-                <strong>100 جوهرة فري فاير</strong> <br> السعر: 3500 نجمة <button onclick="buy('ff100')">شراء</button>
-            </div>
-            <div style="border:1px solid #ddd; padding:10px; border-radius:10px; margin-bottom:10px;">
-                <strong>سحب 45 جنيه كاش</strong> <br> يوصلك 40 جنيه صافي <br> السعر: 2500 نجمة <button onclick="buy('cash45')">سحب</button>
-            </div>
-        `;
-    }
-
-    function loadAdminAds() {
-        // هنا نقوم بجلب المهام المخزنة في قاعدة البيانات (عبر البوت)
-        // للعرض فقط سأضع مثالاً
-        const list = document.getElementById('admin-ads-list');
-        list.innerHTML = `
-            <div class="list-item-admin">
-                <span>google.com - 50⭐</span>
-                <i class="fa-solid fa-circle-xmark delete-icon" onclick="deleteAd('1')"></i>
-            </div>
-        `;
-    }
-
-    function buy(item) {
-        tg.sendData(JSON.stringify({action: "buy", item: item}));
-        tg.close();
-    }
-
-    // سيتم ربط باقي الوظائف بكود البوت (Python)
-</script>
-</body>
-</html>
