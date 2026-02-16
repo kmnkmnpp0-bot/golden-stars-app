@@ -1,64 +1,31 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Golden Stars Store</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body { font-family: 'Cairo', sans-serif; background-color: #f4f7f6; margin: 0; padding: 15px; text-align: center; }
-        .card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid #ddd; }
-        .title { font-size: 18px; font-weight: bold; color: #2c3e50; }
-        .price { color: #f39c12; font-size: 16px; margin: 10px 0; }
-        button { background: #2c3e50; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; }
-        .section-title { background: #f39c12; color: white; padding: 5px; border-radius: 5px; margin: 20px 0 10px; }
-    </style>
-</head>
-<body>
-    <h2 style="color: #2c3e50;">💎 متجر النجوم</h2>
+import telebot
+from telebot import types
+import json
 
-    <div class="section-title">شدات ببجي موبايل</div>
-    <div class="card">
-        <div class="title">60 شدة ببجي</div>
-        <div class="price">3000 نجمة</div>
-        <button onclick="buyItem('PUBG_60', 3000)">شراء الآن</button>
-    </div>
-    <div class="card">
-        <div class="title">325 شدة ببجي</div>
-        <div class="price">12000 نجمة</div>
-        <button onclick="buyItem('PUBG_325', 12000)">شراء الآن</button>
-    </div>
+# التوكن بتاعك اللي بعته
+API_TOKEN = '8483423094:AAGsYnNtwxfcrG6TJ4TXigY5eMBG9ItO8Po' 
+ADMIN_ID = 8283483184 # الـ ID بتاعك كأدمن
+CHANNEL_ID = "@5jsbDp-CpFhhYTJk" # قناتك
 
-    <div class="section-title">جواهر فري فاير</div>
-    <div class="card">
-        <div class="title">210 جوهرة</div>
-        <div class="price">6000 نجمة</div>
-        <button onclick="buyItem('FF_210', 6000)">شراء الآن</button>
-    </div>
+bot = telebot.TeleBot(API_TOKEN)
 
-    <div class="section-title">سحب كاش (فودافون)</div>
-    <div class="card">
-        <div class="title">سحب 150 جنيه</div>
-        <div class="price">8500 نجمة</div>
-        <p style="font-size: 12px; color: red;">يصلك 130 جنيه (خصم رسوم)</p>
-        <button onclick="buyItem('CASH_150', 8500)">طلب سحب</button>
-    </div>
+@bot.message_handler(commands=['start'])
+def start(message):
+    user_id = message.from_user.id
+    # الرابط الذكي لشركة TimeWall اللي بيحل مشكلة الـ ID
+    timewall_link = f"https://timewall.io/users/login?oid=ef03cc0d0841b08f&uid={user_id}"
+    
+    markup = types.InlineKeyboardMarkup(row_width=1)
+    
+    # الزرار اللي بيفتح الواجهة (المتجر)
+    # ملاحظة: لازم ترفع ملف الـ HTML وتاخد الرابط تحطه هنا مكان الرابط التجريبي
+    web_btn = types.InlineKeyboardButton("🌟 فتح تطبيق Golden Stars", web_app=types.WebAppInfo(url="https://your-site.com"))
+    task_btn = types.InlineKeyboardButton("🔗 مهمات TimeWall (ID مفعل)", url=timewall_link)
+    
+    markup.add(web_btn, task_btn)
+    
+    bot.send_message(user_id, f"أهلاً بك في Golden Stars!\nحسابك جاهز برقم: {user_id}", reply_markup=markup)
 
-    <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-
-        function buyItem(name, price) {
-            // إرسال البيانات للبوت
-            tg.sendData(JSON.stringify({
-                "action": "buy",
-                "item": name,
-                "price": price
-            }));
-        }
-    </script>
-</body>
-</html>
-
+print("✅ البوت شغال الآن بالتوكن بتاعك...")
+bot.polling()
 
